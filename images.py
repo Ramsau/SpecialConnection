@@ -8,8 +8,7 @@ IMG_HEIGHT = 480
 TEXT_MARGIN = 20
 FONT_NAME = "./C059-BdIta.ttf"
 
-def convert_image(in_path, out_path):
-    img_in = Image.open(in_path)
+def convert_image(img_in: Image) -> Image:
     resize_factor = min(IMG_WIDTH / float(img_in.width), IMG_HEIGHT / float(img_in.height))
     img_width = int(img_in.width * resize_factor)
     img_height = int(img_in.height * resize_factor)
@@ -23,7 +22,7 @@ def convert_image(in_path, out_path):
     img_out = Image.fromarray(img_dithered * 255.0).convert(
         "1"
     )
-    img_out.save(out_path)
+    return img_out
 
 
 def wrap_text(text, fontname, max_size, min_size, max_width, max_height, draw):
@@ -73,7 +72,7 @@ def wrap_text(text, fontname, max_size, min_size, max_width, max_height, draw):
 
     raise Exception("Text too large to fit in box")
 
-def convert_text(text, out_path):
+def convert_text(text) -> Image:
     img = Image.new("1", (IMG_WIDTH, IMG_HEIGHT), "white")
     d = ImageDraw.Draw(img)
     lines, font_size = wrap_text(text, FONT_NAME, 100, 10,
@@ -83,11 +82,12 @@ def convert_text(text, out_path):
 
     for i, line in enumerate(lines):
         d.text((IMG_WIDTH / 2, IMG_HEIGHT / 2  + (i + 0.5 - len(lines)/2) * font_size), line, font=font, fill="black", anchor="mm")
-    img.save(out_path)
+
+    return img
 
 
 
 
 if __name__ == "__main__":
-#     convert_image("test_img.jpg", "test_out.png")
-    convert_text("nice face...\nmind if i kiss it?", "test_out.png")
+    # convert_image(Image.open("image_in.jpg")).save("test_out.png")
+    convert_text("nice face...\nmind if i kiss it?").save("test_out.png")

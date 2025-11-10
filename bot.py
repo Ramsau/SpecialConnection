@@ -4,11 +4,44 @@ from signalbot import SignalBot, Command, Context, triggered, enable_console_log
 
 import local_secrets as sc
 
+import images
+from PIL import Image
+import base64
+from io import BytesIO
+
+def img_to_b64(img: Image):
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return img_str
+
+def b64_to_img(b64: str):
+    return Image.open(BytesIO(base64.b64decode(b64)))
 
 async def handleMessage(c: Context) -> None:
-    print("doing stuff with message")
     if c.message.source_number == sc.SHOW_MESSAGES_FROM_NR:
-        print(c.message.text)
+        img = None
+        for attachment in c.message.base64_attachments:
+            try:
+                img = b64_to_img(attachment)
+                break
+            except Exception as e:
+                pass
+
+        if img:
+            img_bnw = images.convert_image(img)
+            await c.send(
+                "",
+                base64_attachments=[img_to_b64(img_bnw)],
+            )
+        elif c.message.text:
+            img = images.convert_text(c.message.text)
+            await c.send(
+                "",
+                base64_attachments=[img_to_b64(img)],
+            )
+        else:
+            await c.reply("I don't know what to do with that message.")
 
         await c.react(sc.REACTION_EMOJI)
 

@@ -17,11 +17,7 @@ def convert_image(img_in: Image) -> Image:
     img_height_diff = IMG_HEIGHT - img_height
     img_in = ImageOps.expand(img_in, border=(math.floor(img_width_diff / 2), math.floor(img_height_diff / 2),
                                              math.ceil(img_width_diff / 2), math.ceil(img_height_diff / 2)), fill="white")
-    img_bw = np.array(img_in.convert("L"))
-    img_dithered = np.random.binomial(1, img_bw / 255.0)
-    img_out = Image.fromarray(img_dithered * 255.0).convert(
-        "1"
-    )
+    img_out = img_in.convert("1", dither=Image.Dither.FLOYDSTEINBERG)
     return img_out
 
 
@@ -90,4 +86,4 @@ def convert_text(text) -> Image:
 
 if __name__ == "__main__":
     # convert_image(Image.open("image_in.jpg")).save("test_out.png")
-    convert_text("nice face...\nmind if i kiss it?").save("test_out.png")
+    convert_text("This is a test text").save("test_out.png")

@@ -1,0 +1,19 @@
+[Unit]
+Description=My Python App Service
+After=network.target
+
+[Service]
+Type=simple
+
+# Directory that contains your script
+WorkingDirectory=/home/sc1/SpecialConnection
+
+# Activate virtualenv + run your script
+ExecStart=/bin/bash -c 'source venv/bin/activate && exec python3 bot.py'
+
+# Optional: Restart on crash
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

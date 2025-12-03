@@ -8,6 +8,8 @@ import images
 from PIL import Image
 import base64
 from io import BytesIO
+import epd7in5_V2_old
+import time
 
 def img_to_b64(img: Image):
     buffered = BytesIO()
@@ -30,20 +32,29 @@ async def handleMessage(c: Context) -> None:
 
         if img:
             img_bnw = images.convert_image(img)
+            display_image(img_bnw)
             await c.send(
                 "",
                 base64_attachments=[img_to_b64(img_bnw)],
             )
+            time.sleep(1)
         elif c.message.text:
             img = images.convert_text(c.message.text)
+            display_image(img)
             await c.send(
                 "",
                 base64_attachments=[img_to_b64(img)],
             )
+            time.sleep(1)
         else:
             await c.reply("I don't know what to do with that message.")
 
         await c.react(sc.REACTION_EMOJI)
+
+def display_image(img: Image):
+    epd = epd7in5_V2_old.EPD()
+    epd.init()
+    epd.display(epd.getbuffer(img))
 
 class PingCommand(Command):
 
